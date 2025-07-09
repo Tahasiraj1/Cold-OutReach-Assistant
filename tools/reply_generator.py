@@ -1,55 +1,65 @@
 from .summarize import summarize_email
 import google.generativeai as genai
-from models.interfaces import Email
-from fetcher import EmailFetcher
+from pydantic import EmailStr
+from email_modules.fetcher import EmailFetcher
 import os
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 if not gemini_api_key:
     raise ValueError("GEMINI_API_KEY is not set")
 
-def generate_email_content(email: Email = None, summary: str = None, user_query: str = None) -> str:
-    """Generate an email draft, reply, or fully composed email based on context."""
+def generate_email_content(email: EmailStr, summary: str, user_query: str = None) -> str:
+    """
+    Generate a cold outreach email draft based on lead info and context.
+    """
     genai.configure(api_key=gemini_api_key)
     model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20")
 
-    # Compose the base prompt
-    prompt = "You are a professional email assistant writing on behalf of Taha Siraj.\n"
-    prompt += "NEVER add comments like 'Here's your reply' or 'Here's the draft'. Just output the email body.\n\n"
-    prompt += "Never include spaces for my manual input or change, like this [Your Name] OR [Your Email] OR [Subject] OR [Body] OR [Attachments] OR [Hiring Manager Name] OR Anything like that.\n\n"
+    # Cold outreach-specific system prompt
+    prompt = (
+        "You are a cold outreach assistant working on behalf of Taha Siraj.\n"
+        "Taha helps small businesses improve their websites (speed, design, SEO) and build online presence.\n"
+        "You're sending first-contact emails to business owners who may not know him yet.\n\n"
+        "🚫 DO NOT:\n"
+        "- Say 'Here's your email', 'Here's the draft', or add commentary.\n"
+        "- Add placeholders like [Your Name], [Recipient], [Your Company], etc.\n"
+        "- Be overly polite or robotic. No marketing fluff.\n\n"
+        "✅ DO:\n"
+        "- Keep it personal, clear, and sound like a real person is emailing.\n"
+        "- Make the message sound like it was written one-on-one.\n"
+        "- Mention clear value points like performance, SEO, or poor mobile experience.\n"
+        "- Offer a free audit or brief call if it fits the tone.\n"
+        "- Link to Taha’s real-world portfolio if appropriate.\n"
+    )
 
     if user_query:
-        prompt += f"""📌 User Request:
+        prompt += f"""\n🧠 Lead Context or Business Type:
         {user_query}
 
-        ✉️ Compose an email that:
-        - Addresses the recipient(s) mentioned or implied.
-        - Includes Taha Siraj’s name if appropriate (e.g., closing).
-        - Is natural, professional, clear, and concise.
-        - Avoid unnecessary filler or extra politeness.
+        ✉️ Now, write a personalized cold email that:
+        - Reflects this business's likely pain points.
+        - Offers a solution or insight in plain language.
+        - Signs off with Taha Siraj.
         """
     elif email and summary:
-        
-        prompt += f"""📌 Email Context:
-        {email}
-
-        📌 Summary:
+        prompt += f"""\n🧠 Lead Info:
         {summary}
 
-        ✉️ Draft a reply that:
-        - Answers the sender's query/request.
-        - Includes Taha Siraj's name where appropriate.
-        - Matches the sender's tone and style.
-        - Is natural, professional, and free of filler or excessive politeness.
+        ✉️ Now, write a short cold outreach email that:
+        - Shows you reviewed their business/site (based on the summary).
+        - Gently points out what can be improved (speed, mobile, design, etc.).
+        - Offers to help or provide a free audit.
+        - Signs off with Taha Siraj.
         """
     else:
         raise ValueError("Insufficient input: Provide either user_query or both email and summary.")
-    
+
     try:
         response = model.generate_content(prompt)
         return response.text.strip()
     except Exception as e:
         raise Exception(f"Error generating email content: {e}")
+
 
 if __name__ == "__main__":
     fether = EmailFetcher()
