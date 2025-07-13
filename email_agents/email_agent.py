@@ -32,4 +32,3 @@ email_assistant = Agent(
     tools=[process_emails_pipeline],
     handoffs=[composer_agent, drafter_agent],
 )
-
