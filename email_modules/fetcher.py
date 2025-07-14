@@ -102,3 +102,9 @@ class EmailFetcher:
 
     def fetch_emails(self) -> List[Email]:
         return self._list_latest_emails()
+
+
+if __name__ == "__main__":
+    email = Email()
+    emails = email.fetch_emails()
+    print(emails)
