@@ -4,8 +4,18 @@ from tools.reply_generator import generate_email_content
 from agents import function_tool
 import chainlit as cl
 
+async def send():
+    pass
+
 @function_tool
-async def outreach_pipeline():
+async def outreach_pipeline(subject: str, body: str):
+    """
+        Sends an email to the lead with the subject and body extracted from the pitch.
+
+        Args:
+            subject (str): The subject line of the email. (Extract from pitch)
+            body (str): The body of the email. (Extract from pitch)
+    """
     gs = GoogleSheets()
     leads = gs.get_pending_reach_rows()
 
@@ -21,17 +31,18 @@ async def outreach_pipeline():
                 f"Details: {lead['company_details']}\n"
                 f"Website: {lead['website']}"
             )
+
             pitch = generate_email_content(
-                email=lead['email'],
-                summary=lead['company_details'],
+                details=lead['company_details'],
                 user_query=user_query
             )
 
             manager = NewEmailManager(
                 to=lead['email'],
-                subject="Let's improve your website with Next.js & React!",
-                body=pitch
+                subject=pitch['subject'],
+                body=lead['body']
             )
+            
             manager.draft()
             gs.mark_reach_done(lead['row_index'])
             await cl.Message(content=f"✅ Email sent to {lead['email']} and marked as reached.").send()
