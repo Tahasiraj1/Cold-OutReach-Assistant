@@ -12,9 +12,11 @@ class GoogleSheets:
     def get_pending_reach_rows(self):
         """
         Returns list of dicts for rows where 'Reach' is empty and Email exists.
+        Removes duplicates by company name, keeping the first occurrence.
         """
         rows = self.get_existing_rows()
         pending = []
+        seen_companies = set()  # Track companies we've already seen
 
         for i, row in enumerate(rows):
             try:
@@ -28,19 +30,31 @@ class GoogleSheets:
                 reach = row[7].strip() if len(row) > 7 else ''
                 follow_up = row[8].strip() if len(row) > 8 else ''
 
-                if email and not reach:
-                    pending.append({
-                        'row_index': i + 2,  # +2 to account for header + 0-indexing
-                        'company': company,
-                        'address': address,
-                        'company_details': company_details,
-                        'website': website,
-                        'email': email,
-                        'category': category,
-                        'phone': phone,
-                        'reach': reach,
-                        'follow_up': follow_up
-                    })
+                # Normalize company name for duplicate detection
+                normalized_company = company.lower().strip()
+
+                # Skip if no email or already reached
+                if not email or reach:
+                    continue
+                
+                # Skip if we've already seen this company (duplicate)
+                if normalized_company in seen_companies:
+                    continue
+                
+                # Add to seen companies and pending list
+                seen_companies.add(normalized_company)
+                pending.append({
+                    'row_index': i + 2,  # +2 to account for header + 0-indexing
+                    'company': company,
+                    'address': address,
+                    'company_details': company_details,
+                    'website': website,
+                    'email': email,
+                    'category': category,
+                    'phone': phone,
+                    'reach': reach,
+                    'follow_up': follow_up
+                })
             except Exception as e:
                 print(f"Error processing row {i + 2}: {e}")
                 continue
