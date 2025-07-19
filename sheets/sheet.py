@@ -52,16 +52,3 @@ class GoogleSheets:
 
     def mark_followup_done(self, row_index):
         self.sheet.update_cell(row_index, 9, 'Done')  # Follow up = I = col 9
-
-
-if __name__ == "__main__":
-    gs = GoogleSheets()
-    leads = gs.get_pending_reach_rows()
-
-    count = 1
-    for lead in leads:
-        print(f"{lead['company']} - {lead['email']} - {lead['company_details']}\n\n")
-        count += 1
-        if count == 5:
-            break
-

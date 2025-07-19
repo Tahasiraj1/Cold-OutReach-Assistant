@@ -1,7 +1,5 @@
-from .summarize import summarize_email
 import google.generativeai as genai
 from pydantic import EmailStr
-from email_modules.fetcher import EmailFetcher
 import os
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -28,8 +26,13 @@ def generate_email_content(email: EmailStr, summary: str, user_query: str = None
         "- Keep it personal, clear, and sound like a real person is emailing.\n"
         "- Make the message sound like it was written one-on-one.\n"
         "- Mention clear value points like performance, SEO, or poor mobile experience.\n"
+        "- Signs off with Taha Siraj.\n"
         "- Offer a free audit or brief call if it fits the tone.\n"
-        "- Link to Taha’s real-world portfolio if appropriate.\n"
+        "- If the recipient wants to contact Taha, include his contact info at the end of the email:\n"
+        "    - Portfolio: https://my-portfolio-eta-one-97.vercel.app/\n"
+        "    - LinkedIn: https://www.linkedin.com/in/taha-siraj-521b512b7/\n"
+        "    - Email: tahasiraj242@gmail.com\n"
+        "    - Phone: +92 3311245238\n"
     )
 
     if user_query:
@@ -59,12 +62,3 @@ def generate_email_content(email: EmailStr, summary: str, user_query: str = None
         return response.text.strip()
     except Exception as e:
         raise Exception(f"Error generating email content: {e}")
-
-
-if __name__ == "__main__":
-    fether = EmailFetcher()
-    email = fether.fetch_emails()
-    print(email)
-    summary = summarize_email(email)
-    reply = generate_email_content(email=email, summary=summary)
-    print(reply)

@@ -3,7 +3,7 @@ from agents import Runner
 import chainlit as cl
 import asyncio
 
-async def run_agent(input_str: str = "Fetch latest emails from my inbox, and act accordingly."):
+async def run_agent(input_str: str = "Run the outreach pipeline tool to process business leads."):
     msg = cl.Message(content="")
     await msg.send()
     try:
@@ -32,6 +32,6 @@ async def start_background_email_agent():
     async def periodic_runner():
         while True:
             await run_agent()  # Default message
-            await asyncio.sleep(30)
+            await asyncio.sleep(60)
 
     asyncio.create_task(periodic_runner())
