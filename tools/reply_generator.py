@@ -13,7 +13,6 @@ if not gemini_api_key:
 
 def generate_email_content(
     details: str = None,
-    user_query: str = None,
 ) -> str:
     """
     Generate a cold outreach email draft based on lead info, tone, and business context.
@@ -56,27 +55,14 @@ def generate_email_content(
         f"    Phone: +92 3311245238\n"
     )
 
-    if user_query and details:
+    if details:
         prompt += f"""\n🧠 Lead Profile:
-        - Business Type or Query: {user_query}
-        - Website Details or Observations: {details}
+        - Business Details: {details}
 
         ✉️ Write a cold email that combines both business context and technical insights. Address likely pain points based on the query and details, show how Taha can help, and end with a clear call to action.
         """
-    elif user_query:
-        prompt += f"""\n🧠 Lead Business Type or Query:
-        {user_query}
-
-        ✉️ Write a cold email reflecting this business's likely problems (UX, SEO, tech), explain how Taha can help, and invite them to respond.
-        """
-    elif details:
-        prompt += f"""\n🧠 Lead Website Observations:
-        {details}
-
-        ✉️ Write a concise, technical cold email highlighting weaknesses (site speed, UX, SEO), offer a free audit, and end with contact info.
-        """
     else:
-        raise ValueError("Either 'user_query', 'details', or both must be provided.")
+        raise ValueError("User query must be provided.")
 
 
     try:

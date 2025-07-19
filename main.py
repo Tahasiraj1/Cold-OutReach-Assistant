@@ -32,6 +32,5 @@ async def start_background_email_agent():
     async def periodic_runner():
         while True:
             await run_agent()  # Default message
-            await asyncio.sleep(60)
 
     asyncio.create_task(periodic_runner())
