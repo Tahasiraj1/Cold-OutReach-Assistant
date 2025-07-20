@@ -30,7 +30,7 @@ def generate_email_content(
         "- 'body': The body of the email.\n"
 
         f"🎯 OBJECTIVE:\n"
-        f"Write a short, personalized email that:\n"
+        f"Write a short, concise, and personalized email that:\n"
         f"- Hooks attention early by showing relevance.\n"
         f"- Identifies 1–2 pain points (slow site, bad SEO, not mobile-friendly).\n"
         f"- Offers a free website audit or short call.\n"
@@ -43,9 +43,12 @@ def generate_email_content(
 
         f"🚫 DO NOT:\n"
         f"- Use fluff or marketing buzzwords.\n"
-        f"- Add 'Here's your draft' or placeholders.\n\n"
+        "- Add 'Here's your draft' or placeholders.\n"
+        "- Use placeholders like [Business Owner Name] or [Name].\n"
+        "- Use brackets or template variables in the greeting.\n"
 
-        f"✅ ALWAYS:\n"
+        "\n✅ ALWAYS:\n"
+        "- If you don't know the recipient's name, use a natural, friendly greeting like 'Hi there,' or 'Hello,' or just start the email without a greeting.\n"
         f"- Mention Taha's name and value.\n"
         f"- Use natural, 1-on-1 tone.\n"
         f"- Close with contact info:\n"
